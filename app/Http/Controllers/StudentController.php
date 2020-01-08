@@ -13,7 +13,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all();
-        return view('student',['students'=>$students,'layout'=>'index']);
+        return view('student',compact('students'));
        
     }
 
@@ -24,8 +24,8 @@ class StudentController extends Controller
      */
     public function create()
     {
-        $students = Student::all();
-        return view('student',['students'=>$students,'layout'=>'create']);
+       
+        return view('create');
     }
 
     /**
@@ -36,6 +36,17 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $validations = array(
+            'cne'=>'required',
+            'firstName' => 'required|string',
+            'secondName' => 'required|string',
+            'age' => 'required|integer',
+            'speciality' => 'required',
+
+    	);
+    	
+        $request->validate($validations);
+        
         $students = new Student();
         $students->cne = $request->input('cne');
         $students->firstName = $request->input('firstName');
@@ -43,7 +54,7 @@ class StudentController extends Controller
         $students->age = $request->input('age');
         $students->speciality = $request->input('speciality');
         $students->save();
-        return redirect('/');
+        return redirect('/')->with('msg','Student Added Successfully');
         
     }
 
@@ -70,7 +81,7 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
         $students = Student::all();
-        return view('student',['students'=>$students,'student'=>$student,'layout'=>'edit']);
+        return view('edit',compact('student'));
 
     }
 
@@ -90,9 +101,8 @@ class StudentController extends Controller
         $student->age = $request->input('age');
         $student->speciality = $request->input('speciality');
         $student->save();
-        return redirect('/');
-        $students = Student::all();
-        return view('student',['students'=>$students,'student'=>$student,'layout'=>'edit']);
+        return redirect('/')->with('msg','Student Detail Updated Successfully');
+        
     }
 
     /**
@@ -105,6 +115,6 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
         $student->delete();
-        return redirect('/');
+        return redirect('/')->with('msg','Student with id '.$id.' is successfully deleted.');
     }
 }
